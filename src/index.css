@@ -104,6 +104,7 @@ body {
 .app-header {
   text-align: center;
   margin-bottom: 2.5rem;
+  padding-top: 1.5rem;
 }
 
 .logo-container {
