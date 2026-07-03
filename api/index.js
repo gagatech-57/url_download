@@ -307,14 +307,50 @@ app.post('/api/download', async (req, res) => {
 
 // Proxy tunnel endpoint
 app.get('/api/proxy', async (req, res) => {
-  const { url } = req.query;
+  const { url, filename } = req.query;
 
   if (!url) {
     return res.status(400).send('URL is required');
   }
 
-  console.log(`Redirecting client directly to media source: ${url}`);
-  return res.redirect(url);
+  try {
+    const response = await axios({
+      method: 'get',
+      url: url,
+      responseType: 'stream',
+      timeout: 30000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Accept': '*/*',
+        'Accept-Encoding': 'identity'
+      }
+    });
+
+    const cleanFilename = filename 
+      ? filename.replace(/[/\\?%*:|"<>\s]/g, '_') 
+      : 'downloaded_media';
+
+    const finalFilename = `GagaStreama_${cleanFilename.replace(/^GagaStreama_/, '')}`;
+
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(finalFilename)}"`);
+    res.setHeader('Content-Type', response.headers['content-type'] || 'application/octet-stream');
+    
+    if (response.headers['content-length']) {
+      res.setHeader('Content-Length', response.headers['content-length']);
+    }
+
+    response.data.pipe(res);
+
+    response.data.on('error', (err) => {
+      if (!res.headersSent) {
+        res.redirect(url);
+      }
+    });
+  } catch (err) {
+    if (!res.headersSent) {
+      res.redirect(url);
+    }
+  }
 });
 
 module.exports = app;

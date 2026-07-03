@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DownloadCloud, History, Settings as SettingsIcon, LogOut, X, User, ShieldAlert, ArrowRight, HelpCircle } from 'lucide-react';
+import { DownloadCloud, History, Settings as SettingsIcon, LogOut, X, User, ShieldAlert, ArrowRight, HelpCircle, FileVideo, FileAudio, Link as LinkIcon } from 'lucide-react';
 import PremiumBackground from './components/PremiumBackground';
 import Downloader from './components/Downloader';
 import HistoryList from './components/HistoryList';
@@ -314,13 +314,39 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Infographic Guide Image */}
-              <div style={{ width: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)', background: '#090a0f', padding: '0.5rem' }}>
-                <img 
-                  src="/tutorial.png" 
-                  alt="Download Tutorial Infographic" 
-                  style={{ width: '100%', height: 'auto', borderRadius: '6px', display: 'block', objectFit: 'cover' }} 
-                />
+              {/* Infographic Guide Mockup */}
+              <div className="tutorial-mockup-wrapper">
+                <div className="phone-frame">
+                  <div className="phone-screen">
+                    <div className="phone-header">
+                      <div className="phone-camera"></div>
+                    </div>
+                    
+                    <div className="mock-app-logo">
+                      <DownloadCloud size={14} style={{ color: 'var(--primary)' }} />
+                      <span>GagaStreama</span>
+                    </div>
+
+                    <div className="mock-search-input">
+                      <LinkIcon size={8} />
+                      <span>https://instagram.com/reel/DaS_hH...</span>
+                    </div>
+
+                    <div className="mock-btn-fetch">Fetch Media</div>
+
+                    <div className="mock-option-grid">
+                      <div className="mock-card active">
+                        <FileVideo size={12} />
+                        <span>MP4 Video</span>
+                        <div className="mock-download-badge">Download</div>
+                      </div>
+                      <div className="mock-card">
+                        <FileAudio size={12} />
+                        <span>MP3 Audio</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
