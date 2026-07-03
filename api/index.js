@@ -236,7 +236,7 @@ app.post('/api/download', async (req, res) => {
         audioFormat: audioFormat || 'mp3',
         audioBitrate: audioBitrate || '128',
         videoQuality: videoQuality || '1080',
-        downloadMode: downloadMode || 'auto',
+        downloadMode: downloadMode || 'tunnel',
         filenameStyle: 'basic',
         disableMetadata: false
       }, {
@@ -278,53 +278,14 @@ app.post('/api/download', async (req, res) => {
 
 // Proxy tunnel endpoint
 app.get('/api/proxy', async (req, res) => {
-  const { url, filename } = req.query;
+  const { url } = req.query;
 
   if (!url) {
     return res.status(400).send('URL is required');
   }
 
-  const isTunnelUrl = url.includes('/tunnel?') || url.includes('tunnel') || url.includes('id=');
-
-  if (isTunnelUrl) {
-    return res.redirect(url);
-  }
-
-  try {
-    const response = await axios({
-      method: 'get',
-      url: url,
-      responseType: 'stream',
-      timeout: 30000,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        'Accept': '*/*'
-      }
-    });
-
-    const cleanFilename = filename 
-      ? filename.replace(/[/\\?%*:|"<>\s]/g, '_') 
-      : 'downloaded_media';
-
-    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(cleanFilename)}"`);
-    res.setHeader('Content-Type', response.headers['content-type'] || 'application/octet-stream');
-    
-    if (response.headers['content-length']) {
-      res.setHeader('Content-Length', response.headers['content-length']);
-    }
-
-    response.data.pipe(res);
-
-    response.data.on('error', (err) => {
-      if (!res.headersSent) {
-        res.redirect(url);
-      }
-    });
-  } catch (err) {
-    if (!res.headersSent) {
-      res.redirect(url);
-    }
-  }
+  console.log(`Redirecting client directly to media source: ${url}`);
+  return res.redirect(url);
 });
 
 module.exports = app;
