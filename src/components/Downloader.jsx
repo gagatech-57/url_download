@@ -143,10 +143,11 @@ export default function Downloader({ customApi, onAddHistory }) {
 
       const streamUrl = data.url;
       const rawFilename = data.filename || `${getPlatformName(url)}_video.mp4`;
-      const proxyUrl = `/api/proxy?url=${encodeURIComponent(streamUrl)}&filename=${encodeURIComponent(rawFilename)}`;
+      const finalFilename = `GagaStreama_${rawFilename}`;
+      const proxyUrl = `/api/proxy?url=${encodeURIComponent(streamUrl)}&filename=${encodeURIComponent(finalFilename)}`;
       
-      triggerDownload(proxyUrl, rawFilename);
-      onAddHistory(rawFilename, 'video', proxyUrl);
+      triggerDownload(proxyUrl, finalFilename);
+      onAddHistory(finalFilename, 'video', proxyUrl);
     } catch (err) {
       console.error('Video download error:', err);
       setError('Could not download video format: ' + err.message);
@@ -191,10 +192,11 @@ export default function Downloader({ customApi, onAddHistory }) {
         }
       }
 
-      const proxyUrl = `/api/proxy?url=${encodeURIComponent(streamUrl)}&filename=${encodeURIComponent(rawFilename)}`;
+      const finalFilename = `GagaStreama_${rawFilename}`;
+      const proxyUrl = `/api/proxy?url=${encodeURIComponent(streamUrl)}&filename=${encodeURIComponent(finalFilename)}`;
       
-      triggerDownload(proxyUrl, rawFilename);
-      onAddHistory(rawFilename, 'audio', proxyUrl);
+      triggerDownload(proxyUrl, finalFilename);
+      onAddHistory(finalFilename, 'audio', proxyUrl);
     } catch (err) {
       console.error('Audio download error:', err);
       setError('Could not download audio format: ' + err.message);
@@ -213,10 +215,11 @@ export default function Downloader({ customApi, onAddHistory }) {
       : (result.thumb || result.url); // Fallback to thumb or URL (for Instagram/TikTok)
 
     const rawFilename = `${getPlatformName(url)}_thumbnail.jpg`;
-    const proxyUrl = `/api/proxy?url=${encodeURIComponent(imageUrl)}&filename=${encodeURIComponent(rawFilename)}`;
+    const finalFilename = `GagaStreama_${rawFilename}`;
+    const proxyUrl = `/api/proxy?url=${encodeURIComponent(imageUrl)}&filename=${encodeURIComponent(finalFilename)}`;
     
-    triggerDownload(proxyUrl, rawFilename);
-    onAddHistory(rawFilename, 'image', proxyUrl);
+    triggerDownload(proxyUrl, finalFilename);
+    onAddHistory(finalFilename, 'image', proxyUrl);
     
     setTimeout(() => setDownloadingFormat(null), 3000);
   };
