@@ -12,6 +12,28 @@ export default function Downloader({ customApi, onAddHistory }) {
   const [selectedBitrate, setSelectedBitrate] = useState('128');
   const [isUrlDirty, setIsUrlDirty] = useState(false);
 
+  const sanitizeUrl = (urlStr) => {
+    try {
+      const urlObj = new URL(urlStr.trim());
+      if (urlObj.hostname.includes('instagram.com')) {
+        urlObj.search = '';
+      } else if (urlObj.hostname.includes('youtu.be') || urlObj.hostname.includes('youtube.com')) {
+        const v = urlObj.searchParams.get('v');
+        urlObj.search = '';
+        if (v) {
+          urlObj.searchParams.set('v', v);
+        }
+      } else if (urlObj.hostname.includes('twitter.com') || urlObj.hostname.includes('x.com')) {
+        urlObj.search = '';
+      } else if (urlObj.hostname.includes('pinterest.com') || urlObj.hostname.includes('pin.it')) {
+        urlObj.search = '';
+      }
+      return urlObj.toString();
+    } catch (e) {
+      return urlStr.trim();
+    }
+  };
+
   const handleUrlChange = (e) => {
     setUrl(e.target.value);
     if (result) {
@@ -38,8 +60,11 @@ export default function Downloader({ customApi, onAddHistory }) {
     e.preventDefault();
     if (!url.trim()) return;
 
+    const cleanedUrl = sanitizeUrl(url);
+    setUrl(cleanedUrl);
+
     // Platform validation: YouTube, Instagram, X (Twitter), and Pinterest are allowed
-    const lowerUrl = url.toLowerCase();
+    const lowerUrl = cleanedUrl.toLowerCase();
     const isYouTube = lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be');
     const isInstagram = lowerUrl.includes('instagram.com');
     const isTwitter = lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com');
@@ -62,7 +87,7 @@ export default function Downloader({ customApi, onAddHistory }) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          url: url,
+          url: cleanedUrl,
           downloadMode: 'auto',
           customApiOverride: customApi
         })

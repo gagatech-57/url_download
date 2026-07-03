@@ -131,6 +131,29 @@ function detectService(url) {
   return null;
 }
 
+// Sanitize URL helper to remove tracking parameters
+function sanitizeUrl(urlStr) {
+  try {
+    const urlObj = new URL(urlStr.trim());
+    if (urlObj.hostname.includes('instagram.com')) {
+      urlObj.search = '';
+    } else if (urlObj.hostname.includes('youtu.be') || urlObj.hostname.includes('youtube.com')) {
+      const v = urlObj.searchParams.get('v');
+      urlObj.search = '';
+      if (v) {
+        urlObj.searchParams.set('v', v);
+      }
+    } else if (urlObj.hostname.includes('twitter.com') || urlObj.hostname.includes('x.com')) {
+      urlObj.search = '';
+    } else if (urlObj.hostname.includes('pinterest.com') || urlObj.hostname.includes('pin.it')) {
+      urlObj.search = '';
+    }
+    return urlObj.toString();
+  } catch (e) {
+    return urlStr.trim();
+  }
+}
+
 // Sync User Profile (url_users collection)
 app.post('/api/user/sync', async (req, res) => {
   const { name, email, avatar } = req.body;
@@ -142,7 +165,7 @@ app.post('/api/user/sync', async (req, res) => {
     const user = await UserModel.findOneAndUpdate(
       { email },
       { name, avatar, lastLogin: new Date() },
-      { new: true, upsert: true }
+      { returnDocument: 'after', upsert: true }
     );
     res.json({ success: true, user });
   } catch (err) {
@@ -197,8 +220,10 @@ app.post('/api/download', async (req, res) => {
     return res.status(400).json({ error: 'URL is required' });
   }
 
+  const cleanedUrl = sanitizeUrl(url);
+
   try {
-    new URL(url);
+    new URL(cleanedUrl);
   } catch (e) {
     return res.status(400).json({ error: 'Invalid URL format' });
   }
@@ -216,7 +241,7 @@ app.post('/api/download', async (req, res) => {
     targetApis = [cleanOverride];
   } else {
     const cache = await fetchWorkingApis();
-    const service = detectService(url);
+    const service = detectService(cleanedUrl);
     
     if (service && cache.data[service] && cache.data[service].length > 0) {
       const serviceNodes = [...cache.data[service]];
@@ -236,7 +261,7 @@ app.post('/api/download', async (req, res) => {
     const apiNode = targetApis[i];
     try {
       const response = await axios.post(apiNode, {
-        url: url,
+        url: cleanedUrl,
         audioFormat: audioFormat || 'mp3',
         audioBitrate: audioBitrate || '128',
         videoQuality: videoQuality || '1080',
