@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DownloadCloud, History, Settings as SettingsIcon, LogOut, X, User, ShieldAlert, ArrowRight } from 'lucide-react';
+import { DownloadCloud, History, Settings as SettingsIcon, LogOut, X, User, ShieldAlert, ArrowRight, HelpCircle } from 'lucide-react';
 import PremiumBackground from './components/PremiumBackground';
 import Downloader from './components/Downloader';
 import HistoryList from './components/HistoryList';
@@ -37,6 +37,7 @@ export default function App() {
     return saved;
   });
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showHowToUse, setShowHowToUse] = useState(false);
 
   const decodeJwt = (token) => {
     try {
@@ -189,6 +190,15 @@ export default function App() {
       {/* Main Glassmorphic Panel */}
       <div className="glass-panel">
         
+        {/* How to Use Button */}
+        <button 
+          className="btn-how-to-use"
+          onClick={() => setShowHowToUse(true)}
+        >
+          <HelpCircle size={15} />
+          <span>How to Use</span>
+        </button>
+
         {/* User Profile Widget */}
         <div className="user-profile-widget">
           {user ? (
@@ -256,7 +266,7 @@ export default function App() {
             <h1 className="app-title">GagaStreama</h1>
           </div>
           <p className="app-subtitle">
-            Premium media downloader. Instantly save audio (MP3), video (MP4), and images from YouTube and Instagram.
+            Premium media downloader. Instantly save audio (MP3), video (MP4), and images from YouTube, Instagram, X (Twitter), and Pinterest.
           </p>
         </header>
 
@@ -272,6 +282,50 @@ export default function App() {
           GagaStreama Downloader Core © 2026. Built with speed, safety, and privacy in mind.
         </footer>
       </div>
+
+      {/* How to Use Modal */}
+      {showHowToUse && (
+        <div className="modal-overlay" onClick={() => setShowHowToUse(false)}>
+          <div className="modal-content glass-card" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowHowToUse(false)}>
+              <X size={20} />
+            </button>
+            
+            <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fbbf24', fontSize: '1.5rem', marginBottom: '1.25rem' }}>
+              <HelpCircle size={24} style={{ color: 'var(--primary)' }} />
+              <span>How to Download Media</span>
+            </h2>
+
+            <div className="modal-body" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                  <span className="step-num" style={{ background: 'var(--primary)', color: '#000', fontWeight: 'bold', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>1</span>
+                  <p><b>Copy Link:</b> Go to YouTube, Instagram, X (Twitter), or Pinterest and copy the URL of the video, post, reel, or photo you want to download.</p>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                  <span className="step-num" style={{ background: 'var(--primary)', color: '#000', fontWeight: 'bold', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>2</span>
+                  <p><b>Paste & Analyze:</b> Paste the copied link into the input box and click the <b>Fetch Media</b> button to analyze the URL.</p>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                  <span className="step-num" style={{ background: 'var(--primary)', color: '#000', fontWeight: 'bold', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>3</span>
+                  <p><b>Choose & Save:</b> Select your preferred format and quality, then click the download action button to download the file directly to your device.</p>
+                </div>
+              </div>
+
+              {/* Infographic Guide Image */}
+              <div style={{ width: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)', background: '#090a0f', padding: '0.5rem' }}>
+                <img 
+                  src="/tutorial.png" 
+                  alt="Download Tutorial Infographic" 
+                  style={{ width: '100%', height: 'auto', borderRadius: '6px', display: 'block', objectFit: 'cover' }} 
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

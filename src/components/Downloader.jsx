@@ -23,6 +23,8 @@ export default function Downloader({ customApi, onAddHistory }) {
     const lower = urlStr.toLowerCase();
     if (lower.includes('youtube.com') || lower.includes('youtu.be')) return 'YouTube';
     if (lower.includes('instagram.com')) return 'Instagram';
+    if (lower.includes('twitter.com') || lower.includes('x.com')) return 'Twitter/X';
+    if (lower.includes('pinterest.com') || lower.includes('pin.it')) return 'Pinterest';
     return 'Social Media';
   };
 
@@ -36,13 +38,15 @@ export default function Downloader({ customApi, onAddHistory }) {
     e.preventDefault();
     if (!url.trim()) return;
 
-    // Platform validation: Only YouTube and Instagram are allowed
+    // Platform validation: YouTube, Instagram, X (Twitter), and Pinterest are allowed
     const lowerUrl = url.toLowerCase();
     const isYouTube = lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be');
     const isInstagram = lowerUrl.includes('instagram.com');
+    const isTwitter = lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com');
+    const isPinterest = lowerUrl.includes('pinterest.com') || lowerUrl.includes('pin.it');
 
-    if (!isYouTube && !isInstagram) {
-      setError('Only YouTube and Instagram URLs are supported.');
+    if (!isYouTube && !isInstagram && !isTwitter && !isPinterest) {
+      setError('Only YouTube, Instagram, X (Twitter), and Pinterest URLs are supported.');
       return;
     }
 
@@ -225,7 +229,7 @@ export default function Downloader({ customApi, onAddHistory }) {
           <input
             type="text"
             className="search-input"
-            placeholder="Paste YouTube or Instagram link here..."
+            placeholder="Paste YouTube, Instagram, X (Twitter), or Pinterest link here..."
             value={url}
             onChange={handleUrlChange}
             disabled={loading}
