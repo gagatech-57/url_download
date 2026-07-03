@@ -1,0 +1,30 @@
+{
+  "name": "media-downloader",
+  "version": "1.0.0",
+  "description": "Premium YouTube, Instagram, and general Media Downloader",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "node server.js",
+    "client": "vite",
+    "build": "vite build",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "lucide-react": "^0.378.0",
+    "mongoose": "^9.7.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "concurrently": "^8.2.2",
+    "vite": "^5.2.11"
+  }
+}
