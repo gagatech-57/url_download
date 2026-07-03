@@ -193,7 +193,8 @@ export default function Downloader({ customApi, onAddHistory }) {
       }
 
       const finalFilename = `GagaStreama_${rawFilename}`;
-      const proxyUrl = `/api/proxy?url=${encodeURIComponent(streamUrl)}&filename=${encodeURIComponent(finalFilename)}`;
+      const thumbUrl = getDisplayThumbnail();
+      const proxyUrl = `/api/proxy?url=${encodeURIComponent(streamUrl)}&filename=${encodeURIComponent(finalFilename)}&thumbnail=${encodeURIComponent(thumbUrl)}`;
       
       triggerDownload(proxyUrl, finalFilename);
       onAddHistory(finalFilename, 'audio', proxyUrl);

@@ -3,6 +3,7 @@ const cors = require('cors');
 const axios = require('axios');
 const path = require('path');
 const mongoose = require('mongoose');
+const nodeID3 = require('node-id3');
 
 const MONGO_URI = 'mongodb+srv://gunaknn_db_user:gunasekarviji@cluster0.ioiwshu.mongodb.net/swiftmarket?retryWrites=true&w=majority';
 
@@ -330,12 +331,83 @@ app.post('/api/download', async (req, res) => {
 
 // Proxy tunnel endpoint to force browser download and bypass CORS
 app.get('/api/proxy', async (req, res) => {
-  const { url, filename } = req.query;
+  const { url, filename, thumbnail } = req.query;
 
   if (!url) {
     return res.status(400).send('URL is required');
   }
 
+  const cleanFilename = filename 
+    ? filename.replace(/[/\\?%*:|"<>\s]/g, '_') 
+    : 'downloaded_media';
+
+  const finalFilename = `GagaStreama_${cleanFilename.replace(/^GagaStreama_/, '')}`;
+
+  // If the file is an MP3 file and a thumbnail is provided, fetch as buffer and embed ID3 tags
+  const isMp3 = finalFilename.toLowerCase().endsWith('.mp3');
+
+  if (isMp3) {
+    try {
+      console.log(`[MP3 Proxy] Fetching audio from: ${url}`);
+      const mp3Response = await axios({
+        method: 'get',
+        url: url,
+        responseType: 'arraybuffer',
+        timeout: 30000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+          'Accept': '*/*'
+        }
+      });
+
+      const mp3Buffer = Buffer.from(mp3Response.data);
+      let finalBuffer = mp3Buffer;
+
+      if (thumbnail && thumbnail.trim()) {
+        try {
+          console.log(`[MP3 Proxy] Fetching thumbnail cover: ${thumbnail}`);
+          const thumbResponse = await axios({
+            method: 'get',
+            url: thumbnail,
+            responseType: 'arraybuffer',
+            timeout: 10000
+          });
+
+          const thumbBuffer = Buffer.from(thumbResponse.data);
+          const cleanTitle = finalFilename
+            .replace('.mp3', '')
+            .replace('GagaStreama_', '')
+            .replace(/_/g, ' ')
+            .trim();
+
+          const tags = {
+            title: cleanTitle,
+            image: {
+              mime: thumbResponse.headers['content-type'] || 'image/jpeg',
+              type: { id: 3, name: 'front cover' },
+              description: 'Cover Art',
+              imageBuffer: thumbBuffer
+            }
+          };
+
+          finalBuffer = nodeID3.write(tags, mp3Buffer);
+          console.log('[MP3 Proxy] Successfully embedded cover thumbnail into ID3 tags!');
+        } catch (thumbErr) {
+          console.error('[MP3 Proxy] Failed to fetch or embed thumbnail:', thumbErr.message);
+        }
+      }
+
+      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(finalFilename)}"`);
+      res.setHeader('Content-Type', 'audio/mpeg');
+      res.setHeader('Content-Length', finalBuffer.length);
+      return res.end(finalBuffer);
+    } catch (err) {
+      console.error(`[MP3 Proxy] Buffering failed: ${err.message}. Falling back to direct redirect...`);
+      return res.redirect(url);
+    }
+  }
+
+  // General streaming proxy for MP4/Images/Other formats
   try {
     const response = await axios({
       method: 'get',
@@ -349,13 +421,6 @@ app.get('/api/proxy', async (req, res) => {
       }
     });
 
-    const cleanFilename = filename 
-      ? filename.replace(/[/\\?%*:|"<>\s]/g, '_') 
-      : 'downloaded_media';
-
-    const finalFilename = `GagaStreama_${cleanFilename.replace(/^GagaStreama_/, '')}`;
-
-    // Set download headers
     res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(finalFilename)}"`);
     res.setHeader('Content-Type', response.headers['content-type'] || 'application/octet-stream');
     
