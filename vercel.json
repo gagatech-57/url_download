@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api"
+      "destination": "https://url-download-lset.onrender.com/api/$1"
     }
   ]
 }
