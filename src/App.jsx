@@ -226,42 +226,24 @@ export default function App() {
               )}
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <button 
-                onClick={handleDemoLogin}
-                className="btn-small demo-login-btn"
+            <div className="google-avatar-ring" style={{ position: 'relative' }}>
+              <div 
+                id="google-signin-btn" 
                 style={{ 
-                  fontSize: '0.7rem', 
-                  padding: '0.2rem 0.5rem', 
-                  background: 'rgba(255, 255, 255, 0.03)', 
-                  border: '1px dashed var(--border-color)', 
-                  color: 'var(--text-secondary)',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
+                  position: 'absolute', 
+                  top: 0, 
+                  left: 0, 
+                  width: '100%', 
+                  height: '100%', 
+                  opacity: 0.01, 
+                  zIndex: 2, 
+                  cursor: 'pointer',
+                  overflow: 'hidden',
+                  borderRadius: '50%'
                 }}
-              >
-                <span className="demo-text">Demo Login</span>
-                <span className="demo-icon-only" style={{ display: 'none' }}>Demo</span>
-              </button>
-              <div className="google-avatar-ring" style={{ position: 'relative' }}>
-                <div 
-                  id="google-signin-btn" 
-                  style={{ 
-                    position: 'absolute', 
-                    top: 0, 
-                    left: 0, 
-                    width: '100%', 
-                    height: '100%', 
-                    opacity: 0.01, 
-                    zIndex: 2, 
-                    cursor: 'pointer',
-                    overflow: 'hidden',
-                    borderRadius: '50%'
-                  }}
-                ></div>
-                <div style={{ zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', borderRadius: '50%', background: '#0c0d14' }}>
-                  <User size={18} style={{ color: 'var(--primary)' }} />
-                </div>
+              ></div>
+              <div style={{ zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', borderRadius: '50%', background: '#0c0d14' }}>
+                <User size={18} style={{ color: 'var(--primary)' }} />
               </div>
             </div>
           )}
