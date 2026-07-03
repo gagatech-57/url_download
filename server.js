@@ -228,14 +228,15 @@ app.post('/api/download', async (req, res) => {
     const service = detectService(url);
     
     if (service && cache.data[service] && cache.data[service].length > 0) {
-      targetApis = [...cache.data[service]];
+      const serviceNodes = [...cache.data[service]];
+      serviceNodes.sort(() => Math.random() - 0.5);
+      const otherNodes = cache.allApis.filter(url => !serviceNodes.includes(url));
+      otherNodes.sort(() => Math.random() - 0.5);
+      targetApis = [...serviceNodes, ...otherNodes];
     } else {
-      // Fallback: shuffle all unique working instances
       targetApis = [...cache.allApis];
+      targetApis.sort(() => Math.random() - 0.5);
     }
-
-    // Shuffle target APIs slightly to distribute load
-    targetApis.sort(() => Math.random() - 0.5);
   }
 
   console.log(`Processing URL: ${url}`);

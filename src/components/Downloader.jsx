@@ -207,7 +207,23 @@ export default function Downloader({ customApi, onAddHistory }) {
   };
 
   const isInstagramUrl = url.toLowerCase().includes('instagram.com');
-  const isVideoFile = result && (
+  const isImageFile = result && (
+    (result.filename && (
+      result.filename.toLowerCase().endsWith('.jpg') ||
+      result.filename.toLowerCase().endsWith('.jpeg') ||
+      result.filename.toLowerCase().endsWith('.png') ||
+      result.filename.toLowerCase().endsWith('.webp') ||
+      result.filename.toLowerCase().endsWith('.gif')
+    )) ||
+    (result.url && (
+      result.url.toLowerCase().includes('.jpg') ||
+      result.url.toLowerCase().includes('.jpeg') ||
+      result.url.toLowerCase().includes('.png') ||
+      result.url.toLowerCase().includes('.webp')
+    ))
+  );
+
+  const isVideoFile = result && !isImageFile && (
     (result.filename && (
       result.filename.toLowerCase().endsWith('.mp4') ||
       result.filename.toLowerCase().endsWith('.mov') ||
@@ -321,7 +337,7 @@ export default function Downloader({ customApi, onAddHistory }) {
 
                 <div className="options-grid">
                   {/* MP3 Download Card - Hidden for Instagram */}
-                  {!isInstagramUrl && (
+                  {!isImageFile && !isInstagramUrl && (
                     <div className="download-option-card primary-option">
                       <div className="option-icon-wrapper">
                         <FileAudio size={22} />
@@ -366,7 +382,7 @@ export default function Downloader({ customApi, onAddHistory }) {
                   )}
 
                   {/* MP4 Download Card - Hidden for Instagram photo posts */}
-                  {(!isInstagramUrl || isVideoFile) && (
+                  {!isImageFile && (!isInstagramUrl || isVideoFile) && (
                     <div className="download-option-card primary-option">
                       <div className="option-icon-wrapper">
                         <FileVideo size={22} />
