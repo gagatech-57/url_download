@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Download, Link as LinkIcon, AlertCircle, FileAudio, FileVideo, Image as ImageIcon, Sparkles, CheckCircle } from 'lucide-react';
 import PickerView from './PickerView';
 
@@ -11,6 +11,22 @@ export default function Downloader({ customApi, onAddHistory }) {
   const [selectedQuality, setSelectedQuality] = useState('480'); // Default YouTube resolution to 480p
   const [selectedBitrate, setSelectedBitrate] = useState('128');
   const [isUrlDirty, setIsUrlDirty] = useState(false);
+  const [isQualityDropdownOpen, setIsQualityDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsQualityDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, []);
 
   const sanitizeUrl = (urlStr) => {
     try {
@@ -418,22 +434,114 @@ export default function Downloader({ customApi, onAddHistory }) {
                       </div>
                       <span className="option-label">MP4 Video</span>
 
-                      <div className="select-wrapper">
-                        <select
-                          className="quality-select"
-                          value={selectedQuality}
-                          onChange={(e) => setSelectedQuality(e.target.value)}
-                          disabled={downloadingFormat !== null}
+                      <div className="select-wrapper" ref={dropdownRef} style={{ position: 'relative', width: '100%' }}>
+                        <div 
+                          className={`custom-select-trigger ${isQualityDropdownOpen ? 'active' : ''}`}
+                          onClick={() => downloadingFormat === null && setIsQualityDropdownOpen(!isQualityDropdownOpen)}
+                          style={{
+                            width: '100%',
+                            background: 'rgba(0, 0, 0, 0.45)',
+                            border: '1.5px solid var(--border-color)',
+                            padding: '0.65rem 1rem',
+                            borderRadius: '8px',
+                            color: 'var(--text-primary)',
+                            fontFamily: 'var(--font-primary)',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            textAlign: 'center',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            transition: 'all var(--transition-fast)'
+                          }}
                         >
-                          <option value="2160">2160p (4K UHD)</option>
-                          <option value="1440">1440p (2K QHD)</option>
-                          <option value="1080">1080p (Full HD)</option>
-                          <option value="720">720p (HD)</option>
-                          <option value="480">480p (Standard)</option>
-                          <option value="360">360p (Low)</option>
-                          <option value="240">240p (Very Low)</option>
-                          <option value="144">144p (Tiny)</option>
-                        </select>
+                          <span>{
+                            selectedQuality === '2160' ? '2160p (4K UHD)' :
+                            selectedQuality === '1440' ? '1440p (2K QHD)' :
+                            selectedQuality === '1080' ? '1080p (Full HD)' :
+                            selectedQuality === '720' ? '720p (HD)' :
+                            selectedQuality === '480' ? '480p (Standard)' :
+                            selectedQuality === '360' ? '360p (Low)' :
+                            selectedQuality === '240' ? '240p (Very Low)' :
+                            '144p (Tiny)'
+                          }</span>
+                          <span className="dropdown-arrow-icon" style={{
+                            border: 'solid var(--primary)',
+                            borderWidth: '0 2px 2px 0',
+                            display: 'inline-block',
+                            padding: '3px',
+                            transform: isQualityDropdownOpen ? 'rotate(-135deg)' : 'rotate(45deg)',
+                            transition: 'transform var(--transition-fast)',
+                            marginLeft: '4px'
+                          }}></span>
+                        </div>
+                        
+                        {isQualityDropdownOpen && (
+                          <div 
+                            className="custom-dropdown-list glass-card"
+                            style={{
+                              position: 'absolute',
+                              top: '110%',
+                              left: 0,
+                              right: 0,
+                              background: 'rgba(10, 11, 18, 0.95)',
+                              border: '1.5px solid var(--primary)',
+                              borderRadius: '8px',
+                              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.7), 0 0 15px rgba(251, 191, 36, 0.1)',
+                              zIndex: 100,
+                              maxHeight: '220px',
+                              overflowY: 'auto',
+                              padding: '4px'
+                            }}
+                          >
+                            {[
+                              { value: '2160', label: '2160p (4K UHD)' },
+                              { value: '1440', label: '1440p (2K QHD)' },
+                              { value: '1080', label: '1080p (Full HD)' },
+                              { value: '720', label: '720p (HD)' },
+                              { value: '480', label: '480p (Standard)' },
+                              { value: '360', label: '360p (Low)' },
+                              { value: '240', label: '240p (Very Low)' },
+                              { value: '144', label: '144p (Tiny)' }
+                            ].map((opt) => (
+                              <div
+                                key={opt.value}
+                                className={`custom-dropdown-option ${selectedQuality === opt.value ? 'selected' : ''}`}
+                                onClick={() => {
+                                  setSelectedQuality(opt.value);
+                                  setIsQualityDropdownOpen(false);
+                                }}
+                                style={{
+                                  padding: '0.6rem 1rem',
+                                  fontSize: '0.8rem',
+                                  color: selectedQuality === opt.value ? '#000' : 'var(--text-primary)',
+                                  background: selectedQuality === opt.value ? 'var(--primary)' : 'transparent',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  textAlign: 'center',
+                                  fontWeight: selectedQuality === opt.value ? 'bold' : '500',
+                                  transition: 'all 0.15s ease'
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (selectedQuality !== opt.value) {
+                                    e.currentTarget.style.background = 'rgba(251, 191, 36, 0.15)';
+                                    e.currentTarget.style.color = 'var(--primary)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (selectedQuality !== opt.value) {
+                                    e.currentTarget.style.background = 'transparent';
+                                    e.currentTarget.style.color = 'var(--text-primary)';
+                                  }
+                                }}
+                              >
+                                {opt.label}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       <button
