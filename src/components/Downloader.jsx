@@ -12,12 +12,17 @@ export default function Downloader({ customApi, onAddHistory }) {
   const [selectedBitrate, setSelectedBitrate] = useState('128');
   const [isUrlDirty, setIsUrlDirty] = useState(false);
   const [isQualityDropdownOpen, setIsQualityDropdownOpen] = useState(false);
+  const [isBitrateDropdownOpen, setIsBitrateDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const bitrateDropdownRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsQualityDropdownOpen(false);
+      }
+      if (bitrateDropdownRef.current && !bitrateDropdownRef.current.contains(event.target)) {
+        setIsBitrateDropdownOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -389,20 +394,110 @@ export default function Downloader({ customApi, onAddHistory }) {
                       </div>
                       <span className="option-label">MP3 Audio</span>
                       
-                      <div className="select-wrapper">
-                        <select
-                          className="quality-select"
-                          value={selectedBitrate}
-                          onChange={(e) => setSelectedBitrate(e.target.value)}
-                          disabled={downloadingFormat !== null}
+                      <div className="select-wrapper" ref={bitrateDropdownRef} style={{ position: 'relative', width: '100%' }}>
+                        <div 
+                          className={`custom-select-trigger ${isBitrateDropdownOpen ? 'active' : ''}`}
+                          onClick={() => downloadingFormat === null && setIsBitrateDropdownOpen(!isBitrateDropdownOpen)}
+                          style={{
+                            width: '100%',
+                            background: 'rgba(0, 0, 0, 0.45)',
+                            border: '1.5px solid var(--border-color)',
+                            padding: '0.65rem 1rem',
+                            borderRadius: '8px',
+                            color: 'var(--text-primary)',
+                            fontFamily: 'var(--font-primary)',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            textAlign: 'center',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            transition: 'all var(--transition-fast)'
+                          }}
                         >
-                          <option value="320">320 kbps (High Quality)</option>
-                          <option value="256">256 kbps (Medium-High)</option>
-                          <option value="128">128 kbps (Standard)</option>
-                          <option value="96">96 kbps (Medium)</option>
-                          <option value="64">64 kbps (Low)</option>
-                          <option value="8">8 kbps (Tiny)</option>
-                        </select>
+                          <span>{
+                            selectedBitrate === '320' ? '320 kbps (High Quality)' :
+                            selectedBitrate === '256' ? '256 kbps (Medium-High)' :
+                            selectedBitrate === '128' ? '128 kbps (Standard)' :
+                            selectedBitrate === '96' ? '96 kbps (Medium)' :
+                            selectedBitrate === '64' ? '64 kbps (Low)' :
+                            '8 kbps (Tiny)'
+                          }</span>
+                          <span className="dropdown-arrow-icon" style={{
+                            border: 'solid var(--primary)',
+                            borderWidth: '0 2px 2px 0',
+                            display: 'inline-block',
+                            padding: '3px',
+                            transform: isBitrateDropdownOpen ? 'rotate(-135deg)' : 'rotate(45deg)',
+                            transition: 'transform var(--transition-fast)',
+                            marginLeft: '4px'
+                          }}></span>
+                        </div>
+                        
+                        {isBitrateDropdownOpen && (
+                          <div 
+                            className="custom-dropdown-list glass-card"
+                            style={{
+                              position: 'absolute',
+                              top: '110%',
+                              left: 0,
+                              right: 0,
+                              background: '#0a0b12',
+                              border: '1.5px solid var(--primary)',
+                              borderRadius: '8px',
+                              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.7), 0 0 15px rgba(251, 191, 36, 0.1)',
+                              zIndex: 100,
+                              maxHeight: '220px',
+                              overflowY: 'auto',
+                              padding: '4px'
+                            }}
+                          >
+                            {[
+                              { value: '320', label: '320 kbps (High Quality)' },
+                              { value: '256', label: '256 kbps (Medium-High)' },
+                              { value: '128', label: '128 kbps (Standard)' },
+                              { value: '96', label: '96 kbps (Medium)' },
+                              { value: '64', label: '64 kbps (Low)' },
+                              { value: '8', label: '8 kbps (Tiny)' }
+                            ].map((opt) => (
+                              <div
+                                key={opt.value}
+                                className={`custom-dropdown-option ${selectedBitrate === opt.value ? 'selected' : ''}`}
+                                onClick={() => {
+                                  setSelectedBitrate(opt.value);
+                                  setIsBitrateDropdownOpen(false);
+                                }}
+                                style={{
+                                  padding: '0.6rem 1rem',
+                                  fontSize: '0.8rem',
+                                  color: selectedBitrate === opt.value ? '#000' : 'var(--text-primary)',
+                                  background: selectedBitrate === opt.value ? 'var(--primary)' : 'transparent',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  textAlign: 'center',
+                                  fontWeight: selectedBitrate === opt.value ? 'bold' : '500',
+                                  transition: 'all 0.15s ease'
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (selectedBitrate !== opt.value) {
+                                    e.currentTarget.style.background = 'rgba(251, 191, 36, 0.15)';
+                                    e.currentTarget.style.color = 'var(--primary)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (selectedBitrate !== opt.value) {
+                                    e.currentTarget.style.background = 'transparent';
+                                    e.currentTarget.style.color = 'var(--text-primary)';
+                                  }
+                                }}
+                              >
+                                {opt.label}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       <button
@@ -486,7 +581,7 @@ export default function Downloader({ customApi, onAddHistory }) {
                               top: '110%',
                               left: 0,
                               right: 0,
-                              background: 'rgba(10, 11, 18, 0.95)',
+                              background: '#0a0b12',
                               border: '1.5px solid var(--primary)',
                               borderRadius: '8px',
                               boxShadow: '0 10px 25px rgba(0, 0, 0, 0.7), 0 0 15px rgba(251, 191, 36, 0.1)',
