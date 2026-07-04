@@ -1684,8 +1684,8 @@ body {
 }
 
 .chat-message-bubble.user {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-  color: #000;
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  color: #fff !important;
   border-radius: 12px 12px 0 12px;
   align-self: flex-end;
 }
@@ -1707,7 +1707,7 @@ body {
 }
 
 .chat-message-bubble.user .chat-message-time {
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .chat-input-container {
