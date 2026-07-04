@@ -261,11 +261,15 @@ app.post('/api/download', async (req, res) => {
   for (let i = 0; i < targetApis.length; i++) {
     const apiNode = targetApis[i];
     try {
+      const isHighRes = videoQuality === '1440' || videoQuality === '2160';
+      const videoCodec = isHighRes ? 'vp9' : 'h264';
+
       const response = await axios.post(apiNode, {
         url: cleanedUrl,
         audioFormat: audioFormat || 'mp3',
         audioBitrate: audioBitrate || '128',
         videoQuality: videoQuality || '1080',
+        videoCodec: videoCodec,
         downloadMode: downloadMode || 'tunnel',
         filenameStyle: 'basic',
         disableMetadata: false

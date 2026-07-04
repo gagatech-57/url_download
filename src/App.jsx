@@ -4,7 +4,7 @@ import PremiumBackground from './components/PremiumBackground';
 import Downloader from './components/Downloader';
 import HistoryList from './components/HistoryList';
 import Settings from './components/Settings';
-import AIAgentChat from './components/AIAgentChat';
+
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('download');
@@ -357,8 +357,7 @@ export default function App() {
         </div>
       )}
       
-      {/* n8n AI Agent Chat Widget */}
-      <AIAgentChat />
+
     </div>
   );
 }
