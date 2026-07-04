@@ -94,7 +94,7 @@ export default function App() {
 
   useEffect(() => {
     const renderGoogleBtn = () => {
-      if (window.google && !user) {
+      if (window.google) {
         try {
           window.google.accounts.id.initialize({
             client_id: googleClientId,
@@ -205,62 +205,65 @@ export default function App() {
 
         {/* User Profile Widget */}
         <div className="user-profile-widget">
-          {user ? (
-            <div style={{ position: 'relative' }}>
-              <div 
-                className="google-avatar-ring" 
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-              >
+          {/* Logged In View */}
+          <div style={{ display: user ? 'block' : 'none', position: 'relative' }}>
+            <div 
+              className="google-avatar-ring" 
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+            >
+              <img 
+                src={user?.avatar || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} 
+                alt={user?.name || ''} 
+                className="google-avatar-img" 
+              />
+            </div>
+            
+            {showProfileMenu && user && (
+              <div className="profile-dropdown">
                 <img 
-                  src={user.avatar || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} 
+                  src={user.avatar} 
                   alt={user.name} 
-                  className="google-avatar-img" 
+                  style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
                 />
+                <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#fff', textAlign: 'center' }}>{user.name}</div>
+                <div className="profile-dropdown-email">{user.email}</div>
+                
+                <button 
+                  onClick={handleLogout} 
+                  className="btn-primary" 
+                  style={{ width: '100%', marginTop: '0.5rem', padding: '0.4rem 0', height: '32px', fontSize: '0.8rem', background: 'linear-gradient(135deg, #f43f5e 0%, #be123c 100%)', border: 'none', borderRadius: '6px', boxShadow: 'none' }}
+                >
+                  <LogOut size={12} />
+                  <span>Sign Out</span>
+                </button>
               </div>
-              
-              {showProfileMenu && (
-                <div className="profile-dropdown">
-                  <img 
-                    src={user.avatar} 
-                    alt={user.name} 
-                    style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
-                  />
-                  <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#fff', textAlign: 'center' }}>{user.name}</div>
-                  <div className="profile-dropdown-email">{user.email}</div>
-                  
-                  <button 
-                    onClick={handleLogout} 
-                    className="btn-primary" 
-                    style={{ width: '100%', marginTop: '0.5rem', padding: '0.4rem 0', height: '32px', fontSize: '0.8rem', background: 'linear-gradient(135deg, #f43f5e 0%, #be123c 100%)', border: 'none', borderRadius: '6px', boxShadow: 'none' }}
-                  >
-                    <LogOut size={12} />
-                    <span>Sign Out</span>
-                  </button>
-                </div>
-              )}
+            )}
+          </div>
+
+          {/* Logged Out View */}
+          <div 
+            className="google-avatar-ring" 
+            style={{ display: user ? 'none' : 'block', position: 'relative' }}
+          >
+            <div 
+              id="google-signin-btn" 
+              style={{ 
+                position: 'absolute', 
+                top: 0, 
+                left: 0, 
+                width: '100%', 
+                height: '100%', 
+                opacity: 0.01, 
+                zIndex: 2, 
+                cursor: 'pointer',
+                overflow: 'hidden',
+                borderRadius: '50%'
+              }}
+            ></div>
+            <div style={{ zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', borderRadius: '50%', background: '#0c0d14' }}>
+              <User size={18} style={{ color: 'var(--primary)' }} />
             </div>
-          ) : (
-            <div className="google-avatar-ring" style={{ position: 'relative' }}>
-              <div 
-                id="google-signin-btn" 
-                style={{ 
-                  position: 'absolute', 
-                  top: 0, 
-                  left: 0, 
-                  width: '100%', 
-                  height: '100%', 
-                  opacity: 0.01, 
-                  zIndex: 2, 
-                  cursor: 'pointer',
-                  overflow: 'hidden',
-                  borderRadius: '50%'
-                }}
-              ></div>
-              <div style={{ zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', borderRadius: '50%', background: '#0c0d14' }}>
-                <User size={18} style={{ color: 'var(--primary)' }} />
-              </div>
-            </div>
-          )}
+          </div>
         </div>
 
         {/* Header Section */}
