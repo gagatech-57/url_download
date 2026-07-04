@@ -114,16 +114,22 @@ export default function AIAgentChat() {
         let replyText = '';
         const lower = userText.toLowerCase();
         
-        if (lower.includes('how') && (lower.includes('download') || lower.includes('use'))) {
-          replyText = 'To download, copy any YouTube, Instagram, X (Twitter), or Pinterest URL, paste it into the search box, click "Fetch Media", select your quality card (MP3 or MP4), and download. Try copying a clean link without trackers!';
-        } else if (lower.includes('platform') || lower.includes('support') || lower.includes('site')) {
-          replyText = 'GagaStreama supports downloading media from YouTube (videos & audio), Instagram (reels & photos), X/Twitter (videos), and Pinterest (images/pins).';
-        } else if (lower.includes('database') || lower.includes('mongo') || lower.includes('store')) {
-          replyText = 'Yes, all successful downloads and user sign-ins are logged into the secure MongoDB Atlas database under "url_downloads" and "url_users" collections!';
+        if (lower.includes('how') || lower.includes('use') || lower.includes('download') || lower.includes('work')) {
+          replyText = 'To download, simply copy a link from YouTube, Instagram, X (Twitter), or Pinterest and paste it into the main input box. Click "Fetch Media" to fetch the stream. After fetching, you can select whether you want to save it as an MP3 audio file or an MP4 video file. I will automatically prefix the filename with "GagaStreama_" and save it directly to your device!';
+        } else if (lower.includes('hi') || lower.includes('hello') || lower.includes('hey') || lower.includes('greeting')) {
+          replyText = 'Hello there! I am GagaAI, your built-in media download assistant. You can ask me how to download files, what platforms we support, or how your download history and profiles are saved. What would you like to know?';
+        } else if (lower.includes('platform') || lower.includes('support') || lower.includes('site') || lower.includes('youtube') || lower.includes('instagram') || lower.includes('pinterest') || lower.includes('twitter')) {
+          replyText = 'GagaStreama fully supports YouTube (both video downloads and high-quality MP3 audio extractions), Instagram (reels, videos, and post photos), X/Twitter (videos), and Pinterest (images/pins). Simply paste the link to start!';
+        } else if (lower.includes('music') || lower.includes('audio') || lower.includes('mp3') || lower.includes('play') || lower.includes('thumb')) {
+          replyText = 'When you download in MP3 format, our backend fetches the audio stream and the video cover thumbnail. It embeds the thumbnail directly into the MP3 file tags using node-id3. When you open the MP3 in Samsung Music, Apple Music, VLC, or Spotify, the original video thumbnail will show up beautifully as the album art!';
+        } else if (lower.includes('db') || lower.includes('database') || lower.includes('mongo') || lower.includes('store') || lower.includes('save') || lower.includes('log')) {
+          replyText = 'Your downloads and profile registrations are securely stored in the MongoDB Atlas database. The server connects to the "swiftmarket" database and logs details inside "url_downloads" (user, url, filename, format, timestamp) and "url_users" (name, email, avatar, lastLogin) collections.';
         } else if (lower.includes('n8n') || lower.includes('agent') || lower.includes('webhook')) {
-          replyText = 'To connect me to n8n, click the gear icon (⚙️) in my header, paste your n8n AI Agent Chat trigger webhook URL, and click save! I will route all chat requests to it instantly.';
+          replyText = 'You can connect me to a custom AI workflow agent by clicking the gear icon (⚙️) above and pasting your n8n AI Chat trigger webhook URL. If you save the URL, I will query your workflow model for all responses!';
+        } else if (lower.includes('prefix') || lower.includes('name') || lower.includes('filename')) {
+          replyText = 'Yes! All downloaded media files are automatically prefixed with "GagaStreama_" (e.g. GagaStreama_YouTube_video.mp4). The backend sets this in the Content-Disposition header before serving the file, so it is saved correctly across all devices.';
         } else {
-          replyText = 'I am currently running in simulation mode. To enable my full AI brain, please configure an n8n AI workflow webhook by clicking the gear icon (⚙️) above!';
+          replyText = 'GagaStreama is a premium, high-speed downloader. To get started, paste your YouTube, Instagram, X, or Pinterest link in the input box above and click "Fetch Media". Let me know if you have any questions about downloading audio/video or about our features!';
         }
 
         const agentMsg = {
